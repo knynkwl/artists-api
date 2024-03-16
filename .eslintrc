@@ -1,0 +1,33 @@
+{
+  "plugins": ["import"],
+  "rules": {
+    "import/no-unresolved": "error"
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": false,
+        "project": "./tsconfig.json"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts?(x)"],
+      "rules": {
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-inferrable-types": "off",
+        "@typescript-eslint/typedef": [
+          "warn",
+          {
+            "arrowParameter": true,
+            "parameter": true
+          }
+        ]
+      }
+    }
+  ]
+}
