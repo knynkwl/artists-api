@@ -1,6 +1,6 @@
 import {Router} from 'express'
 import { body } from "express-validator"
-// import { createProduct, deleteProduct, getOneProduct, getProducts } from './handlers/product'
+import { createArtist, deleteArtist, getArtistById, getAllArtist } from './handlers/artists'
 // import { createUpdate, deleteUpdate, getOneUpdate, getUpdates, updateUpdate } from './handlers/update'
 // import { handleInputErrors } from './modules/middleware'
 
