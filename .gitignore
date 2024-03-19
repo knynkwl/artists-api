@@ -1,4 +1,7 @@
 node_modules
-# Keep environment variables out of version control
+prisma/migrations/*
+prisma/*.db
 .env
+.DS_Store
 logs/*
+*.db

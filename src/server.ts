@@ -1,28 +1,30 @@
 import express from 'express'
-import morgan from 'morgan'
+import morganMiddleware from './middleware/morganMiddleware'
 import cors from 'cors'
 
-import router from './router'
 import { protect } from './utils/auth'
-// import { createNewUser, signin } from './handlers/user'
+import apiRouter from './routes/api'
+import userRouter from './routes/user'
+import rateLimiter from './middleware/rateLimiter'
 
 const app = express()
 
 app.use(cors())
-app.use(morgan('dev'))
+app.use(morganMiddleware)
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+if(!protect) {
+  app.use(rateLimiter)
+}
 
 app.get('/', (_req, _res, next) => {
   setTimeout(() => {
-    next(new Error('hello'))
+    next(new Error('Error from / route'))
   },1)
 })
 
-app.use('/api', protect, router)
-
-// app.post('/user', createNewUser)
-// app.post('/signin', signin)
+app.use('/api', protect, apiRouter)
+app.use('/user', userRouter)
 
 // app.use((err, req, res, next) => {
 //   console.log(err)
