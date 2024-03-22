@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import prismaClient from "../../prismaClient";
 import { comparePasswords, createJWT, hashPassword } from "../../utils/auth";
-import randomstring from 'randomstring';
 
 const getUserRole = async (email: string) => {
   const adminEmails = process.env.ADMIN_EMAILS?.split(',');
@@ -31,7 +30,7 @@ const handleSignup = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'User not found' });
     }
 
-    const validTmpPass = await comparePasswords(tmpPassword, user.tmpPassword)
+    const validTmpPass = await comparePasswords(tmpPassword, user.tmpPassword as string)
     if (!validTmpPass) {
       return res.status(401).json({ error: 'Temporary password not valid!' });
     }
@@ -43,7 +42,7 @@ const handleSignup = async (req: Request, res: Response) => {
       },
       data: {
         name,
-        tmpPassword: undefined,
+        tmpPassword: '',
         password: hashedPassword,
         verified: true
       }

@@ -8,6 +8,10 @@ const inviteUser = async (req: Request, res: Response) => {
   try {
     const { email, assignedRole, name } = req.body;
 
+    if(!assignedRole) {
+      return res.status(400).json({ error: 'assignedRole not set' });
+    }
+
     const foundRole = await prismaClient.api_roles.findUnique({
       where: {
         name: assignedRole
@@ -66,7 +70,7 @@ const inviteUser = async (req: Request, res: Response) => {
     })
   } 
   catch (error) {
-    res.status(500).json({ error: 'An error occurred during user invite' })
+    res.status(500).json({ error: 'An error occurred during user invite', message: error})
   }
 }
 

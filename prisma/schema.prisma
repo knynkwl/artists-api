@@ -64,7 +64,7 @@ model api_users {
   name      String?
   email     String        @unique
   password  String?
-  tmpPassword String     @default("")
+  tmpPassword String?
   roleId    String?
   role      api_roles?     @relation(fields: [roleId], references: [id])
   artists   scf_artists[]

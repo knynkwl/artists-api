@@ -1,4 +1,12 @@
 import nodemailer from "nodemailer";
+import mg from "nodemailer-mailgun-transport";
+
+const auth = {
+  auth: {
+    api_key: process.env.MAILGUN_API_KEY as string,
+    domain: 'sarasotachalkfestival.org'
+  }
+}
 
 export const sendMailTransporter = async ({
   to, 
@@ -9,23 +17,14 @@ export const sendMailTransporter = async ({
   subject: string;
   html: string;
 }) => {
-  let mailOptions = ({
+  const nodemailerMailgun = nodemailer.createTransport(mg(auth));
+
+  let mailOptions = {
     from:  process.env.MAIL_USER,
     to,
     subject,
     html
-  })
+  }
 
-  const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
-    },
-  });
-
-  return await transporter.sendMail(mailOptions) 
+  return await nodemailerMailgun.sendMail(mailOptions);
 }

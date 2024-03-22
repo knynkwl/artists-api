@@ -29,20 +29,28 @@ interface CustomRequest extends Request {
   user?: any; 
 }
 
+// Generic error message for authentication
+// for security reasons, we don't want to give away too much information
+const customError = (customError: string) => {
+  if(process.env.NODE_ENV === 'production') {
+    return 'There was an error with your request. Please try again.'
+  } else {
+    return customError
+  }
+}
+
 export const protect = (req: CustomRequest, res: Response, next: NextFunction) => {
   const bearer = req.headers.authorization
 
   if (!bearer) {
-    res.status(401)
-    res.json({message: 'You are not authorized to access this.'})
+    res.status(401).json({message: customError('Authorization header not set or missing')})
     return
   }
 
   const [, token] = bearer.split(' ')
 
   if (!token) {
-    res.status(401)
-    res.json({message: 'Not valid auth token'})
+    res.status(401).json({message: customError('No token provided')})
     return
   }
 
@@ -52,9 +60,8 @@ export const protect = (req: CustomRequest, res: Response, next: NextFunction) =
     req.user = user
     next()
   } catch (e) {
-    res.status(401)
-    logger.error('There was an error with authentication', e)
-    res.json({message: 'There was an error with authentication'})
+    logger.error(customError('No token provided'), e)
+    res.status(401).json({message: customError('No token provided')})
     return
   }
 }
@@ -63,7 +70,7 @@ export const isAdmin = async (req: CustomRequest, res: Response, next: NextFunct
   const { user } = req
 
   if (!user) {
-    return res.status(401).json({message: 'You are not authorized to access this.'})
+    return res.status(401).json({message: customError('User not in response object')})
   }
   
   const getUser = await prismaClient.api_users.findUnique({
@@ -73,7 +80,9 @@ export const isAdmin = async (req: CustomRequest, res: Response, next: NextFunct
   })
   
   if (!getUser || !getUser.roleId) {
-    return res.status(401).json({message: 'You are not authorized to access this.'})
+    return res.status(401).json({
+      message: customError('User not found or role is not assigned.')
+    })
   }
 
   const roleById = await prismaClient.api_roles.findUnique({
@@ -84,7 +93,7 @@ export const isAdmin = async (req: CustomRequest, res: Response, next: NextFunct
 
   if(roleById?.name !== 'Admin') {
     res.status(401).json({
-      message: 'You are not authorized to access this.'
+      message: customError('You are not authorized to access this route')
     })
   }
   
